@@ -1,4 +1,6 @@
+import type { Course } from "../entities/course.entity.js";
 import { Enrollment } from "../entities/enrollment.entity.js";
+import type { Student } from "../entities/student.entity.js";
 import type EnrollmentRepository from "../repository/enrollment.repository.js";
 
 export default class EnrollmentService {
@@ -12,39 +14,43 @@ export default class EnrollmentService {
     return await this.repository.getEnrollments();
   }
 
-  async getEnrollment(id: any) {
+  async getEnrollment(id: number) {
     const exists = await this.repository.getEnrollment(id);
 
-      if(!exists){
-        throw new Error("ENROLLMENT_NOT_FOUND")
-      }
+    if (!exists) {
+      throw new Error("ENROLLMENT_NOT_FOUND");
+    }
 
-    return exists
+    return exists;
   }
 
-  async enrollStudent(dto: any) {  
-    const isSiblings = await this.repository.findSiblings(dto.student, dto.course);
+  async enrollStudent(dto: { student: string; course: number }) {
+    const isSiblings = await this.repository.findSiblings(
+      dto.student,
+      dto.course,
+    );
 
     if (isSiblings) {
       throw new Error("SIBLINGS_FOUND");
     }
 
     const newEnrollment = new Enrollment();
-    newEnrollment.student = dto.student;
-    newEnrollment.course = dto.course;
+    newEnrollment.student = {id: dto.student} as Student;
+    newEnrollment.course = {id: dto.course} as Course;
 
-    await this.repository.enrollStudent(newEnrollment);
+    return await this.repository.enrollStudent(newEnrollment);
   }
 
-  async editEnrollment(id: any, dto: any) {
+  async editEnrollment(id: number, dto: { student: string; course: number }) {
     const isReal = await this.repository.getEnrollment(id);
 
     if (!isReal) {
       throw new Error("ENROLLMENT_NOT_FOUND");
     }
-
-    const isSiblings = await this.repository.findSiblings(dto.student, dto.course);
-
+    const isSiblings = await this.repository.findSiblings(
+      isReal.student.id || dto.student,
+      dto.course || isReal.course.id,
+    );
     if (isSiblings) {
       throw new Error("SIBLINGS_FOUND");
     }
@@ -59,8 +65,8 @@ export default class EnrollmentService {
     await this.repository.editEnrollment(id, isReal);
   }
 
-  async deleteEnrollment(id: any) {
-    const isReal = this.repository.getEnrollment(id);
+  async deleteEnrollment(id: number) {
+    const isReal = await this.repository.getEnrollment(id);
 
     if (!isReal) {
       throw new Error("ENROLLMENT_NOT_FOUND");

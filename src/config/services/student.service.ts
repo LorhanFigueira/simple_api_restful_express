@@ -12,7 +12,7 @@ export default class StudentService {
     return await this.repository.getStudents();
   }
 
-  async findStudent(id: any) {
+  async findStudent(id: string) {
     const findingUser = await this.repository.getStudent(id);
 
     if (!findingUser) {
@@ -22,7 +22,7 @@ export default class StudentService {
     return findingUser;
   }
 
-  async createStudent(dto: any) {
+  async createStudent(dto: {name: string; email: string}) {
     const hasEmail = await this.repository.findEmail(dto.email);
 
     if (hasEmail) {
@@ -37,7 +37,7 @@ export default class StudentService {
     return this.repository.createStudent(newStudent);
   }
 
-  async editStudent(id: any, dto: any) {
+  async editStudent(id: string, dto: {name: string; email: string}) {
     const student = await this.repository.getStudent(id);
 
     if (!student) {
@@ -58,7 +58,7 @@ export default class StudentService {
     this.repository.editStudent(id, student);
   }
 
-  async deleteStudent(id: any) {
+  async deleteStudent(id: string) {
     const student = await this.repository.getStudent(id);
 
     if (!student) {

@@ -11,7 +11,7 @@ export class EnrollmentCreating1780769297821 implements MigrationInterface {
     );
     }
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
+    public async down(_queryRunner: QueryRunner): Promise<void> {
     }
 
 }

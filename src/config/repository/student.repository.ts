@@ -11,22 +11,26 @@ export default class StudentRepository implements studentInterface {
   async getStudents(): Promise<Student[]> {
     return await this.repository.find();
   }
-  async getStudent(id: string): Promise<any> {
-    return await this.repository.findOne({where: {id: id}})
+  async getStudent(id: string): Promise<Student | null> {
+    return await this.repository.findOne({ where: { id: id } });
   }
   createStudent(student: Student): Promise<Student> {
-    return this.repository.save(student)
+    return this.repository.save(student);
   }
   async editStudent(id: string, newStudent: Student): Promise<void> {
-    const editedStudent = await this.getStudent(id)
-    Object.assign(editedStudent, newStudent)
-    await this.repository.save(editedStudent)
+    const editedStudent = await this.getStudent(id);
+
+    if (!editedStudent) {
+      throw new Error("STUDENT_NOT_FOUND");
+    }
+    Object.assign(editedStudent, newStudent);
+    await this.repository.save(editedStudent);
   }
   deleteStudent(id: string): void | Promise<void> {
-    this.repository.delete(id)
+    this.repository.delete(id);
   }
 
-  async findEmail(email: string): Promise<any> {
-      return await this.repository.findOne({where: {email: email}})
+  async findEmail(email: string): Promise<Student | null> {
+    return await this.repository.findOne({ where: { email: email } });
   }
 }

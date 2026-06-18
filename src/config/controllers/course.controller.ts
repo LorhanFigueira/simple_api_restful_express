@@ -1,6 +1,5 @@
 import type { Request, Response } from "express";
 import type CourseService from "../services/course.service.js";
-import type { Course } from "../entities/course.entity.js";
 
 export default class CourseController {
   private service: CourseService;
@@ -16,7 +15,7 @@ export default class CourseController {
         return res.status(204);
       }
       return res.status(200).json(response);
-    } catch (e) {
+    } catch (_e) {
       return res.status(500).json({ error: "An Error Occourred on API!" });
     }
   }
@@ -24,13 +23,13 @@ export default class CourseController {
   async getCourse(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const response = await this.service.findCourse(id);
+      const response = await this.service.findCourse(Number(id));
 
       return res.status(200).json(response);
     } catch (e) {
       if (e instanceof Error) {
         if (e.message === "COURSE_NOT_FOUND") {
-          return res.status(400).json({ error: "This ID doesnt exists!" });
+          return res.status(404).json({ error: "This ID doesnt exists!" });
         }
       }
 
@@ -40,7 +39,7 @@ export default class CourseController {
 
   async createCourse(req: Request, res: Response) {
     try {
-      const { title, category, description } = <Course>req.body;
+      const { title, category, description } = req.body;
 
       if (title.length < 3) {
         return res
@@ -56,7 +55,7 @@ export default class CourseController {
       return res
         .status(201)
         .json({ message: "Course created! check on Courses List!", id: `${response.id}` });
-    } catch (error) {
+    } catch (_error) {
       return res.status(500).json({ error: "An Error Occourred on API!" });
     }
   }
@@ -64,7 +63,7 @@ export default class CourseController {
   async editCourse(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const { title, category, description } = <Course>req.body;
+      const { title, category, description } = req.body;
 
       if (title.length < 3) {
         return res
@@ -72,7 +71,7 @@ export default class CourseController {
           .json({ error: "Isnt allowed 3 characters. try again!" });
       }
 
-      const response = await this.service.editCourse(id, {
+        await this.service.editCourse(Number(id), {
         title,
         category,
         description,
@@ -82,7 +81,7 @@ export default class CourseController {
     } catch (e) {
       if (e instanceof Error) {
         if (e.message === "COURSE_NOT_FOUND") {
-          return res.status(400).json({ error: "This ID doesnt exists!" });
+          return res.status(404).json({ error: "This ID doesnt exists!" });
         }
       }
 
@@ -94,13 +93,13 @@ export default class CourseController {
     try {
       const { id } = req.params;
 
-      const response = await this.service.deleteCourse(id);
+      await this.service.deleteCourse(Number(id));
 
       res.status(200).json({ message: "Course deleted!" });
     } catch (e) {
       if (e instanceof Error) {
         if (e.message === "COURSE_NOT_FOUND") {
-          return res.status(400).json({ error: "This ID doesnt exists!" });
+          return res.status(404).json({ error: "This ID doesnt exists!" });
         }
       }
 
