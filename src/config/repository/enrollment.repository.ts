@@ -13,20 +13,24 @@ export default class EnrollmentRepository implements EnrollmentInterface {
       relations: { student: true, course: true },
     });
   }
-  async getEnrollment(id: number): Promise<any> {
+  async getEnrollment(id: number): Promise<Enrollment | null> {
     return await this.repository.findOne({
       where: { id: id },
       relations: { student: true, course: true },
     });
   }
-  enrollStudent(newEnrollment: Enrollment): void | Promise<void> {
-    this.repository.save(newEnrollment);
+  enrollStudent(newEnrollment: Enrollment): Promise<Enrollment> {
+    return this.repository.save(newEnrollment);
   }
   async editEnrollment(
     id: number,
     editedEnrollment: Enrollment,
   ): Promise<void> {
     const editedEnroll = await this.getEnrollment(id);
+
+    if (!editedEnroll) {
+      throw new Error("ENROLLMENT_NOT_FOUND");
+    }
     Object.assign(editedEnroll, editedEnrollment);
     await this.repository.save(editedEnroll);
   }
@@ -34,7 +38,7 @@ export default class EnrollmentRepository implements EnrollmentInterface {
     this.repository.delete(id);
   }
 
-  async findSiblings(student: string, course: number): Promise<any> {
+  async findSiblings(student: string, course: number): Promise<Enrollment | null> {
     return await this.repository.findOne({
       where: { student: { id: student }, course: { id: course } },
     });

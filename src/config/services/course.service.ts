@@ -1,7 +1,5 @@
-import { title } from "node:process";
 import { Course } from "../entities/course.entity.js";
 import type CourseRepository from "../repository/course.repository.js";
-import { error } from "node:console";
 
 export default class CourseService {
   private repository: CourseRepository;
@@ -14,7 +12,7 @@ export default class CourseService {
     return await this.repository.getCourses();
   }
 
-  async findCourse(id: any) {
+  async findCourse(id: number) {
     const isExists = await this.repository.getCourse(id);
 
     if (!isExists) {
@@ -24,7 +22,11 @@ export default class CourseService {
     return isExists;
   }
 
-  async createCourse(dto: any) {
+  async createCourse(dto: {
+    title: string;
+    category: string;
+    description: string;
+  }) {
     const newCourse = new Course();
 
     newCourse.title = dto.title;
@@ -34,10 +36,13 @@ export default class CourseService {
     return this.repository.createCourse(newCourse);
   }
 
-  async editCourse(id: any, dto: any) {
+  async editCourse(
+    id: number,
+    dto: { title: string; category: string; description: string },
+  ) {
     const updatedCourse = await this.repository.getCourse(id);
     if (!updatedCourse) {
-      throw new Error("COURSE_NOT_FOUND")
+      throw new Error("COURSE_NOT_FOUND");
     }
 
     if (dto.title) {
@@ -53,13 +58,13 @@ export default class CourseService {
     await this.repository.editCourse(id, updatedCourse);
   }
 
-  async deleteCourse(id: any){
-    const isExists = await this.repository.getCourse(id)
+  async deleteCourse(id: number) {
+    const isExists = await this.repository.getCourse(id);
 
-    if (!isExists){
-      throw new Error("COURSE_NOT_FOUND")
+    if (!isExists) {
+      throw new Error("COURSE_NOT_FOUND");
     }
 
-    const deletedCourse = await this.repository.deleteCourse(id)
+    await this.repository.deleteCourse(id);
   }
 }

@@ -3,7 +3,7 @@ import type StudentService from "../services/student.service.js";
 import * as yup from "yup";
 import type { Student } from "../entities/student.entity.js";
 
-let studentSchema = yup.object({
+const studentSchema = yup.object({
   name: yup.string().required("Name is required"),
   email: yup
     .string()
@@ -21,7 +21,7 @@ export default class StudentController {
     try {
       const response = await this.service.findStudents();
       return res.status(200).json(response);
-    } catch (e) {
+    } catch (_e) {
       return res.status(500).json({ error: "An error occourred on API!" });
     }
   }
@@ -35,7 +35,7 @@ export default class StudentController {
     } catch (e) {
       if (e instanceof Error) {
         if (e.message === "STUDENT_NOT_FOUND") {
-          return res.status(400).json({ error: "This ID doesnt exists!" });
+          return res.status(404).json({ error: "This ID doesnt exists!" });
         }
 
         return res.status(500).json({ error: "An Error Occourred on API!" });
@@ -45,14 +45,16 @@ export default class StudentController {
 
   async createStudent(req: Request, res: Response) {
     try {
-      const validatedBody = await studentSchema.validate(req.body, {
+      await studentSchema.validate(req.body, {
         abortEarly: false,
       });
       const { name, email } = <Student>req.body;
 
       const response = await this.service.createStudent({ name, email });
 
-      return res.status(201).json({ message: "Student created!", id: `${response.id}` });
+      return res
+        .status(201)
+        .json({ message: "Student created!", id: `${response.id}` });
     } catch (e) {
       if (e instanceof yup.ValidationError) {
         return res.status(400).json(e.errors);
@@ -73,14 +75,14 @@ export default class StudentController {
       const { name, email } = <Student>req.body;
 
       if (email) {
-        const validatingEmail = await studentSchema.validateAt(
+        await studentSchema.validateAt(
           "email",
           { email },
           { abortEarly: false },
         );
       }
 
-      const response = await this.service.editStudent(id, { name, email });
+      await this.service.editStudent(id, { name, email });
 
       return res.status(200).json({ message: "Student edited!" });
     } catch (e) {
@@ -92,7 +94,7 @@ export default class StudentController {
           return res.status(409).json({ error: "Already have this Email" });
         }
         if (e.message === "STUDENT_NOT_FOUND") {
-          return res.status(400).json({ error: "This ID doesnt exists!"})
+          return res.status(404).json({ error: "This ID doesnt exists!" });
         }
       }
 
@@ -104,13 +106,13 @@ export default class StudentController {
     try {
       const { id } = req.params;
 
-      const response = await this.service.deleteStudent(id);
+      await this.service.deleteStudent(id);
 
       return res.status(200).json({ message: "Student deleted!" });
     } catch (e) {
       if (e instanceof Error) {
         if (e.message === "STUDENT_NOT_FOUND") {
-          return res.status(400).json({ error: "This ID doesnt exists!" });
+          return res.status(404).json({ error: "This ID doesnt exists!" });
         }
       }
 
