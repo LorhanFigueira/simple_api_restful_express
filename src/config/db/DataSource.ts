@@ -18,7 +18,7 @@ const AppDataSource = new DataSource({
   database: `${process.env.POSTGRES_DB}`,
   entities: [Course, Student, Enrollment],
 
-  migrationsRun: true, // make it true after creating the tables
+  migrationsRun: false, // make it true after creating the tables
   migrations: [
     CourseContent1779825253989,
     UserCreating1780768757046,
