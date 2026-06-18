@@ -29,7 +29,7 @@ export default class StudentController {
   async getStudent(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const response = await this.service.findStudent(id);
+      const response = await this.service.findStudent(String(id));
 
       res.status(200).json(response);
     } catch (e) {
@@ -82,7 +82,7 @@ export default class StudentController {
         );
       }
 
-      await this.service.editStudent(id, { name, email });
+      await this.service.editStudent(String(id), { name, email });
 
       return res.status(200).json({ message: "Student edited!" });
     } catch (e) {
@@ -106,7 +106,7 @@ export default class StudentController {
     try {
       const { id } = req.params;
 
-      await this.service.deleteStudent(id);
+      await this.service.deleteStudent(String(id));
 
       return res.status(200).json({ message: "Student deleted!" });
     } catch (e) {

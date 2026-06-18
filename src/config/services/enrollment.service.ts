@@ -56,10 +56,10 @@ export default class EnrollmentService {
     }
 
     if (dto.student) {
-      isReal.student = dto.student;
+      isReal.student.id = dto.student;
     }
     if (dto.course) {
-      isReal.course = dto.course;
+      isReal.course.id = dto.course;
     }
 
     await this.repository.editEnrollment(id, isReal);
