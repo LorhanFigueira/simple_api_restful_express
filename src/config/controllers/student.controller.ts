@@ -3,7 +3,7 @@ import type StudentService from "../services/student.service.js";
 import * as yup from "yup";
 import type { Student } from "../entities/student.entity.js";
 
-let studentSchema = yup.object({
+const studentSchema = yup.object({
   name: yup.string().required("Name is required"),
   email: yup
     .string()
@@ -35,7 +35,7 @@ export default class StudentController {
     } catch (e) {
       if (e instanceof Error) {
         if (e.message === "STUDENT_NOT_FOUND") {
-          return res.status(400).json({ error: "This ID doesnt exists!" });
+          return res.status(404).json({ error: "This ID doesnt exists!" });
         }
 
         return res.status(500).json({ error: "An Error Occourred on API!" });
@@ -92,7 +92,7 @@ export default class StudentController {
           return res.status(409).json({ error: "Already have this Email" });
         }
         if (e.message === "STUDENT_NOT_FOUND") {
-          return res.status(400).json({ error: "This ID doesnt exists!"})
+          return res.status(404).json({ error: "This ID doesnt exists!"})
         }
       }
 
@@ -110,7 +110,7 @@ export default class StudentController {
     } catch (e) {
       if (e instanceof Error) {
         if (e.message === "STUDENT_NOT_FOUND") {
-          return res.status(400).json({ error: "This ID doesnt exists!" });
+          return res.status(404).json({ error: "This ID doesnt exists!" });
         }
       }
 
