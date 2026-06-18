@@ -33,7 +33,7 @@ export default class EnrollmentService {
     newEnrollment.student = dto.student;
     newEnrollment.course = dto.course;
 
-    await this.repository.enrollStudent(newEnrollment);
+    return await this.repository.enrollStudent(newEnrollment);
   }
 
   async editEnrollment(id: any, dto: any) {
@@ -42,9 +42,7 @@ export default class EnrollmentService {
     if (!isReal) {
       throw new Error("ENROLLMENT_NOT_FOUND");
     }
-
-    const isSiblings = await this.repository.findSiblings(dto.student, dto.course);
-
+    const isSiblings = await this.repository.findSiblings(isReal.student.id || dto.student, dto.course || isReal.course.id);
     if (isSiblings) {
       throw new Error("SIBLINGS_FOUND");
     }
@@ -60,7 +58,7 @@ export default class EnrollmentService {
   }
 
   async deleteEnrollment(id: any) {
-    const isReal = this.repository.getEnrollment(id);
+    const isReal = await this.repository.getEnrollment(id);
 
     if (!isReal) {
       throw new Error("ENROLLMENT_NOT_FOUND");

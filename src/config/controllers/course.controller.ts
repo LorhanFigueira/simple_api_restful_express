@@ -30,7 +30,7 @@ export default class CourseController {
     } catch (e) {
       if (e instanceof Error) {
         if (e.message === "COURSE_NOT_FOUND") {
-          return res.status(400).json({ error: "This ID doesnt exists!" });
+          return res.status(404).json({ error: "This ID doesnt exists!" });
         }
       }
 
@@ -82,7 +82,7 @@ export default class CourseController {
     } catch (e) {
       if (e instanceof Error) {
         if (e.message === "COURSE_NOT_FOUND") {
-          return res.status(400).json({ error: "This ID doesnt exists!" });
+          return res.status(404).json({ error: "This ID doesnt exists!" });
         }
       }
 
@@ -100,7 +100,7 @@ export default class CourseController {
     } catch (e) {
       if (e instanceof Error) {
         if (e.message === "COURSE_NOT_FOUND") {
-          return res.status(400).json({ error: "This ID doesnt exists!" });
+          return res.status(404).json({ error: "This ID doesnt exists!" });
         }
       }
 

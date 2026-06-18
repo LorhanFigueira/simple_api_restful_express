@@ -45,11 +45,11 @@ describe("GET /Student", () => {
     expect(response.statusCode).toBe(200);
     expect(response.body).toEqual(expect.any(Object));
   });
-  it("GET /Student/:id should return 400 when student does not exist", async () => {
+  it("GET /Student/:id should return 404 when student does not exist", async () => {
     const response = await request(server).get(
       "/student/39c5c5bb-f478-4c2f-8417-bb826b3b4592",
     );
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(404);
     expect(response.body.error).toBe("This ID doesnt exists!");
   });
 });
@@ -190,7 +190,7 @@ describe("PUT /Student", () => {
       .send(editedStudent)
       .set("Accept", "application/json");
 
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(404);
     expect(response.body.error).toBe("This ID doesnt exists!");
   });
 });
@@ -207,7 +207,7 @@ describe("DELETE /Student", () => {
       `/student/39c5c5bb-f478-4c2f-8417-bb826b3b4592`,
     );
 
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(404);
     expect(response.body.error).toBe("This ID doesnt exists!");
   });
 });

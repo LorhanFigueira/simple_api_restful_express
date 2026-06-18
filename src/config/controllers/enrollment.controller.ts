@@ -5,7 +5,7 @@ import type { Enrollment } from "../entities/enrollment.entity.js";
 
 const EnrollmentSchema = yup.object({
   student: yup.string().required("Student ID Required"),
-  course: yup.number().required("Course ID Required"),
+  course: yup.string().required("Course ID Required"),
 });
 
 export default class EnrollmentController {
@@ -34,7 +34,7 @@ export default class EnrollmentController {
     } catch (e) {
       if (e instanceof Error) {
         if (e.message === "ENROLLMENT_NOT_FOUND") {
-          return res.status(400).json({ error: "This ID doesnt exists!" });
+          return res.status(404).json({ error: "This ID doesnt exists!" });
         }
       }
 
@@ -50,9 +50,9 @@ export default class EnrollmentController {
         abortEarly: false,
       });
 
-      await this.service.enrollStudent({ student, course });
+      const response = await this.service.enrollStudent({ student, course });
 
-      return res.status(201).json({ message: "Student enrolled!" });
+      return res.status(201).json({ message: "Student enrolled!", id: `${response.id}` });
     } catch (e) {
       if (e instanceof yup.ValidationError) {
         return res.status(400).json(e.errors);
@@ -72,11 +72,11 @@ export default class EnrollmentController {
   async editEnroll(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const { student, course } = <Enrollment>req.body;
+      const { student, course } = req.body;
 
       await this.service.editEnrollment(id, {
         student,
-        course,
+        course
       });
 
       return res.status(200).json({ message: "Enrollment edited!" });
@@ -88,7 +88,7 @@ export default class EnrollmentController {
             .json({ error: "This student is already attending this course!" });
         }
         if (e.message === "ENROLLMENT_NOT_FOUND") {
-          return res.status(400).json({ error: "This ID doesnt exists!" });
+          return res.status(404).json({ error: "This ID doesnt exists!" });
         }
       }
 
@@ -106,7 +106,7 @@ export default class EnrollmentController {
     } catch (e) {
       if (e instanceof Error) {
         if (e.message === "ENROLLMENT_NOT_FOUND") {
-          return res.status(400).json({ error: "This ID doesnt exists!" });
+          return res.status(404).json({ error: "This ID doesnt exists!" });
         }
       }
 

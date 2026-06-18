@@ -19,8 +19,8 @@ export default class EnrollmentRepository implements EnrollmentInterface {
       relations: { student: true, course: true },
     });
   }
-  enrollStudent(newEnrollment: Enrollment): void | Promise<void> {
-    this.repository.save(newEnrollment);
+  enrollStudent(newEnrollment: Enrollment): Promise<Enrollment> {
+    return this.repository.save(newEnrollment);
   }
   async editEnrollment(
     id: number,

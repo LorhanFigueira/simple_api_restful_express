@@ -3,13 +3,13 @@ import app from "../../app.js";
 import AppDataSource from "../../config/db/DataSource.js";
 
 let server: any;
-let courseID : any;
+let courseID: any;
 
 const testCourse = {
-      title: "Teste 2",
-      category: "Teste3",
-      description: "Teste 4",
-    };
+  title: "Teste 2",
+  category: "Teste3",
+  description: "Teste 4",
+};
 
 beforeAll(async () => {
   if (!AppDataSource.isInitialized) {
@@ -18,8 +18,11 @@ beforeAll(async () => {
 
   server = app.listen(0);
 
-  const response = await request(server).post("/course").send(testCourse).set("Accept", "application/json");
-  courseID = response.body.id
+  const response = await request(server)
+    .post("/course")
+    .send(testCourse)
+    .set("Accept", "application/json");
+  courseID = response.body.id;
 });
 
 afterAll(async () => {
@@ -39,13 +42,13 @@ describe("GET /Course", () => {
     expect(response.body).toEqual(expect.any(Array));
   });
   it("GET /course/:id should return a course", async () => {
-    const response = await request(server).get("/course/5");
+    const response = await request(server).get(`/course/${courseID}`);
     expect(response.statusCode).toBe(200);
     expect(response.body).toEqual(expect.any(Object));
   });
-  it("GET /course/:id should return 400 when course does not exist", async () => {
+  it("GET /course/:id should return 404 when course does not exist", async () => {
     const response = await request(server).get("/course/9532");
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(404);
     expect(response.body.error).toBe("This ID doesnt exists!");
   });
 });
@@ -90,40 +93,60 @@ describe("POST /Course", () => {
 
 describe("PUT /Course", () => {
   it("PUT /Course should edit a course", async () => {
-    const editedCourse = { title: "Title edited", category: "Category Edited", description: "Description Edited"}
-    const response = await request(server).put(`/course/${courseID}`).send(editedCourse).set("Accept", "application/json")
+    const editedCourse = {
+      title: "Title edited",
+      category: "Category Edited",
+      description: "Description Edited",
+    };
+    const response = await request(server)
+      .put(`/course/${courseID}`)
+      .send(editedCourse)
+      .set("Accept", "application/json");
 
-    expect(response.statusCode).toBe(200)
-    expect(response.body.message).toBe("Course Edited!")
-  })
+    expect(response.statusCode).toBe(200);
+    expect(response.body.message).toBe("Course Edited!");
+  });
   it("PUT /Course should return a error when title < 3 characters", async () => {
-    const editedCourse = { title: "T", category: "Category Edited", description: "Description Edited"}
-    const response = await request(server).put(`/course/${courseID}`).send(editedCourse).set("Accept", "application/json")
+    const editedCourse = {
+      title: "T",
+      category: "Category Edited",
+      description: "Description Edited",
+    };
+    const response = await request(server)
+      .put(`/course/${courseID}`)
+      .send(editedCourse)
+      .set("Accept", "application/json");
 
-    expect(response.statusCode).toBe(400)
-    expect(response.body.error).toBe("Isnt allowed 3 characters. try again!")
-  })
+    expect(response.statusCode).toBe(400);
+    expect(response.body.error).toBe("Isnt allowed 3 characters. try again!");
+  });
   it("PUT /Course should return a error when ID is incorrect", async () => {
-    const editedCourse = { title: "Title Edited", category: "Category Edited", description: "Description Edited"}
-    const response = await request(server).put(`/course/-1`).send(editedCourse).set("Accept", "application/json")
+    const editedCourse = {
+      title: "Title Edited",
+      category: "Category Edited",
+      description: "Description Edited",
+    };
+    const response = await request(server)
+      .put(`/course/-1`)
+      .send(editedCourse)
+      .set("Accept", "application/json");
 
-    expect(response.statusCode).toBe(400)
-    expect(response.body.error).toBe("This ID doesnt exists!")
-  })
-})
+    expect(response.statusCode).toBe(404);
+    expect(response.body.error).toBe("This ID doesnt exists!");
+  });
+});
 
 describe("DELETE /Course", () => {
   it("DELETE /Course should delete a course", async () => {
-    const response = await request(server).delete(`/course/${courseID}`)
+    const response = await request(server).delete(`/course/${courseID}`);
 
-    expect(response.statusCode).toBe(200)
-    expect(response.body.message).toBe("Course deleted!")
-  })
+    expect(response.statusCode).toBe(200);
+    expect(response.body.message).toBe("Course deleted!");
+  });
   it("DELETE /Course should return a error when ID is incorrect", async () => {
-    const response = await request(server).delete(`/course/9839`)
+    const response = await request(server).delete(`/course/9839`);
 
-    expect(response.statusCode).toBe(400)
-    expect(response.body.error).toBe("This ID doesnt exists!")
-  })
-})
-
+    expect(response.statusCode).toBe(404);
+    expect(response.body.error).toBe("This ID doesnt exists!");
+  });
+});
