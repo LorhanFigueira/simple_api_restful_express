@@ -1,5 +1,12 @@
 import type { Request, Response } from "express";
 import type CourseService from "../services/course.service.js";
+import * as yup from "yup";
+
+const courseSchema = yup.object({
+  title: yup.string().min(3, "Isnt allowed 3 characters. try again!"),
+  category: yup.string(),
+  description: yup.string(),
+});
 
 export default class CourseController {
   private service: CourseService;
@@ -41,21 +48,22 @@ export default class CourseController {
     try {
       const { title, category, description } = req.body;
 
-      if (title.length < 3) {
-        return res
-          .status(400)
-          .json({ error: "Isnt allowed 3 characters. try again!" });
-      }
+      await courseSchema.validate(req.body, { abortEarly: false });
+
       const response = await this.service.createCourse({
         title,
         category,
         description,
       });
 
-      return res
-        .status(201)
-        .json({ message: "Course created! check on Courses List!", id: `${response.id}` });
-    } catch (_error) {
+      return res.status(201).json({
+        message: "Course created! check on Courses List!",
+        id: `${response.id}`,
+      });
+    } catch (e) {
+      if (e instanceof yup.ValidationError) {
+        return res.status(400).send(e.errors);
+      }
       return res.status(500).json({ error: "An Error Occourred on API!" });
     }
   }
@@ -71,7 +79,7 @@ export default class CourseController {
           .json({ error: "Isnt allowed 3 characters. try again!" });
       }
 
-        await this.service.editCourse(Number(id), {
+      await this.service.editCourse(Number(id), {
         title,
         category,
         description,

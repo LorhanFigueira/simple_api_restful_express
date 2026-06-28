@@ -88,7 +88,7 @@ describe("POST /Course", () => {
     const response = await request(server).post("/course").send(newCourse);
 
     expect(response.statusCode).toBe(400);
-    expect(response.body.error).toBe("Isnt allowed 3 characters. try again!");
+    expect(response.body[0]).toBe("Isnt allowed 3 characters. try again!");
   });
 });
 
