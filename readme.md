@@ -47,6 +47,19 @@ Clone repository:
     git clone https://github.com/LorhanFigueira/simple_api_restful_express.git
 ```
 
+After cloning:
+
+```bash
+    npm install
+```
+
+After the installations, you need to create .env file, insert all the configurations found in **env.example** into it, and then do the folllowing:
+
+```bash
+    docker compose up -d
+    npm run dev
+```
+
 # Developer 🧑‍💻
 
 | [<img loading="lazy" src="https://avatars.githubusercontent.com/u/191516212?v=4" width=115><br><sub>LorhanFigueira</sub>](https://github.com/LorhanFigueira) |
