@@ -1,30 +1,60 @@
 services:
   db:
     container_name: postgres_restful
-    image: postgres:latest
+    image: postgres:17
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PW}
       - POSTGRES_DB=${POSTGRES_DB}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - school_management
     ports:
       - "5432:5432"
     restart: always
     volumes:
-      - post_db_saves:/var/lib/postgresql
+      - post_db_saves:/var/lib/postgresql/data
 
   pgadmin:
     container_name: pgadmin
     image: dpage/pgadmin4:latest
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       - PGADMIN_DEFAULT_EMAIL=${PGADMIN_MAIL}
       - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PW}
+    networks:
+      - school_management
     ports:
       - "5050:80"
     volumes:
       - pgadmin_saves:/var/lib/pgadmin
     restart: always
+
+  api:
+    build: .
+    container_name: school-api
+    volumes:
+      - .:/api
+    command: npm run dev
+    ports:
+      - 3000:3000
+    depends_on:
+      db:
+        condition: service_healthy
+
+    networks:
+      - school_management
+    restart: always
+
+networks:
+  school_management:
+    driver: bridge
 
 volumes:
   post_db_saves:
