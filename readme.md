@@ -47,7 +47,13 @@ Clone repository:
     git clone https://github.com/LorhanFigueira/simple_api_restful_express.git
 ```
 
-After cloning:
+### Docker only:
+
+```bash
+    docker compose up --build -d
+```
+
+### Manually:
 
 ```bash
     npm install
